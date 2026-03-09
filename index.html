@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Guardián Mayor</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root {
     --azul: #1a3a5c;
@@ -261,6 +262,30 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 0 16px; }
+
+  /* ── WIZARD EMAILJS ── */
+  .wizard-paso {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: rgba(255,255,255,0.05); border-radius: 14px;
+    padding: 14px; margin-bottom: 10px;
+  }
+  .wizard-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--azul-med); color: white;
+    font-size: 0.95rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .wizard-titulo { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; }
+  .wizard-desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin-bottom: 8px; }
+  .wizard-btn {
+    display: inline-block; background: rgba(74,158,221,0.2);
+    border: 1.5px solid rgba(74,158,221,0.4); color: #4a9edd;
+    border-radius: 10px; padding: 8px 14px;
+    font-size: 0.85rem; font-weight: 700; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .wizard-btn:active { background: rgba(74,158,221,0.35); }
 </style>
 </head>
 <body>
@@ -277,6 +302,58 @@
 
     <label>📱 Número WhatsApp del familiar (con código país)</label>
     <input id="s-whatsapp" type="tel" placeholder="Ej: 5213312345678" autocomplete="off">
+
+    <label>📧 Email del familiar (para alertas automáticas)</label>
+    <input id="s-email" type="email" placeholder="Ej: familiar@gmail.com" autocomplete="off">
+
+    <!-- WIZARD EMAILJS -->
+    <div style="background:rgba(74,158,221,0.08);border:1.5px solid rgba(74,158,221,0.25);border-radius:16px;padding:16px;margin-bottom:14px">
+      <div style="font-size:1rem;font-weight:900;color:#4a9edd;margin-bottom:4px">⚡ Activar email automático</div>
+      <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:14px;line-height:1.5">Gratis. Sigue los 3 pasos y pega tus claves aquí.</div>
+
+      <!-- PASO 1 -->
+      <div class="wizard-paso">
+        <div class="wizard-num">1</div>
+        <div style="flex:1">
+          <div class="wizard-titulo">Crear cuenta gratis en EmailJS</div>
+          <div class="wizard-desc">Abre el link, regístrate con Gmail y vuelve aquí.</div>
+          <a href="https://www.emailjs.com/docs/introduction/how-does-emailjs-work/" target="_blank" class="wizard-btn">🌐 Abrir EmailJS y registrarse →</a>
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="wizard-paso">
+        <div class="wizard-num">2</div>
+        <div style="flex:1">
+          <div class="wizard-titulo">Conectar tu Gmail como servicio</div>
+          <div class="wizard-desc">Dentro de EmailJS → <strong style="color:white">Email Services → Add New Service → Gmail</strong>. Copia el <strong style="color:white">Service ID</strong> que aparece (ej: service_abc123).</div>
+          <a href="https://dashboard.emailjs.com/admin" target="_blank" class="wizard-btn">📋 Ir al panel de EmailJS →</a>
+          <input id="s-ejssvc" type="text" placeholder="Pega aquí tu Service ID" style="font-size:0.95rem;margin-top:8px;margin-bottom:0">
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="wizard-paso">
+        <div class="wizard-num">3</div>
+        <div style="flex:1">
+          <div class="wizard-titulo">Crear plantilla de alerta</div>
+          <div class="wizard-desc">En EmailJS → <strong style="color:white">Email Templates → Create New Template</strong>. En el cuerpo escribe: <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:6px;font-size:0.8rem">{{mensaje}}</code> y <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:6px;font-size:0.8rem">{{hora}}</code>. Guarda y copia el <strong style="color:white">Template ID</strong>.</div>
+          <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" class="wizard-btn">📝 Ir a Plantillas →</a>
+          <input id="s-ejstpl" type="text" placeholder="Pega aquí tu Template ID" style="font-size:0.95rem;margin-top:8px;margin-bottom:8px">
+        </div>
+      </div>
+
+      <!-- PASO 4: PUBLIC KEY -->
+      <div class="wizard-paso" style="margin-bottom:0">
+        <div class="wizard-num">4</div>
+        <div style="flex:1">
+          <div class="wizard-titulo">Obtener tu Public Key</div>
+          <div class="wizard-desc">En EmailJS → <strong style="color:white">Account → General → Public Key</strong>. Cópiala y pégala aquí.</div>
+          <a href="https://dashboard.emailjs.com/admin/account" target="_blank" class="wizard-btn">🔑 Ir a mi cuenta →</a>
+          <input id="s-ejskey" type="text" placeholder="Pega aquí tu Public Key" style="font-size:0.95rem;margin-top:8px;margin-bottom:0">
+        </div>
+      </div>
+    </div>
 
     <label>💊 Medicamentos y horarios</label>
     <div id="med-lista"></div>
@@ -429,10 +506,15 @@ function agregarMed() {
 function iniciar() {
   const nombre = document.getElementById('s-nombre').value.trim();
   const whatsapp = document.getElementById('s-whatsapp').value.trim().replace(/\D/g,'');
+  const email = document.getElementById('s-email').value.trim();
   if (!nombre || !whatsapp) { mostrarToast('⚠️ Llena el nombre y WhatsApp'); return; }
 
   config.nombre = nombre;
   config.whatsapp = whatsapp;
+  config.email = email;
+  config.emailjsPublicKey  = document.getElementById('s-ejskey').value.trim();
+  config.emailjsServiceId  = document.getElementById('s-ejssvc').value.trim();
+  config.emailjsTemplateId = document.getElementById('s-ejstpl').value.trim();
   config.medicamentos = [];
 
   document.querySelectorAll('[id^="med-val-"]').forEach(inp => {
@@ -458,6 +540,10 @@ function cargarConfig() {
 function irSetup() {
   document.getElementById('s-nombre').value = config.nombre;
   document.getElementById('s-whatsapp').value = config.whatsapp;
+  document.getElementById('s-email').value = config.email || '';
+  document.getElementById('s-ejskey').value = config.emailjsPublicKey || '';
+  document.getElementById('s-ejssvc').value = config.emailjsServiceId || '';
+  document.getElementById('s-ejstpl').value = config.emailjsTemplateId || '';
   cambiarPantalla('setup');
 }
 
@@ -555,12 +641,47 @@ function cancelarSOS() {
   mostrarToast('✅ Alerta cancelada');
 }
 
+// EmailJS config — el usuario pone sus propias claves en el setup
+const EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY';   // se reemplaza en setup
+const EMAILJS_SERVICE_ID  = 'TU_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
+
+async function enviarEmailAlerta(tipo, mensaje) {
+  if (!config.email) return;
+  if (!config.emailjsPublicKey || config.emailjsPublicKey === 'TU_PUBLIC_KEY') {
+    // Sin EmailJS configurado: usar mailto como fallback
+    const subject = encodeURIComponent(`${tipo} - Guardián Mayor`);
+    const body = encodeURIComponent(`${mensaje}\n\n⏰ ${new Date().toLocaleString('es-MX')}\n\nEnviado desde Guardián Mayor`);
+    window.open(`mailto:${config.email}?subject=${subject}&body=${body}`, '_blank');
+    return;
+  }
+  try {
+    emailjs.init(config.emailjsPublicKey);
+    await emailjs.send(config.emailjsServiceId, config.emailjsTemplateId, {
+      to_email: config.email,
+      subject: `${tipo} - Guardián Mayor`,
+      nombre: config.nombre,
+      mensaje: mensaje,
+      hora: new Date().toLocaleString('es-MX')
+    });
+    mostrarToast('📧 Email enviado automáticamente');
+  } catch(e) {
+    console.error('EmailJS error:', e);
+  }
+}
+
 function enviarAlertaWhatsApp(tipo, mensaje) {
-  const texto = encodeURIComponent(`${tipo}\n\n${mensaje}\n\n⏰ ${new Date().toLocaleString('es-MX')}`);
+  const fecha = new Date().toLocaleString('es-MX');
+  const texto = encodeURIComponent(`${tipo}\n\n${mensaje}\n\n⏰ ${fecha}`);
   const url = `https://wa.me/${config.whatsapp}?text=${texto}`;
   document.getElementById('alerta-sos').classList.remove('visible');
+
+  // Enviar email automático PRIMERO (sin intervención del usuario)
+  enviarEmailAlerta(tipo, mensaje);
+
+  // Luego abrir WhatsApp
   window.open(url, '_blank');
-  mostrarToast('📲 Abriendo WhatsApp...');
+  mostrarToast('📲 WhatsApp abierto + 📧 Email enviado');
 }
 
 // ═══════════════════════════════════
@@ -672,6 +793,16 @@ async function iniciarCamara() {
       video: { facingMode: 'environment', width: 320, height: 240 }
     });
     document.getElementById('video-el').srcObject = stream;
+
+    // Activar flash/linterna
+    const track = stream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities();
+    if (capabilities.torch) {
+      await track.applyConstraints({ advanced: [{ torch: true }] });
+      mostrarToast('🔦 Flash activado');
+    } else {
+      mostrarToast('⚠️ Este cel no soporta flash desde el navegador. Usa una linterna externa.');
+    }
   } catch(e) {
     document.getElementById('resultado-medicion').innerHTML = '<div class="resultado-camara">⚠️ No se pudo acceder a la cámara. Permite el permiso e intenta de nuevo.</div>';
   }
@@ -769,8 +900,18 @@ function compartirMedicion(bpm) {
   enviarAlertaWhatsApp('📊 Reporte de salud', `${config.nombre} midió su pulso: ${bpm} BPM. ${bpm < 60 || bpm > 100 ? '⚠️ Fuera de rango normal, considera consultar a un médico.' : '✅ Dentro de rango normal.'}`);
 }
 
-function cerrarCamara() {
-  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+async function cerrarCamara() {
+  if (stream) {
+    const track = stream.getVideoTracks()[0];
+    if (track) {
+      try {
+        const capabilities = track.getCapabilities();
+        if (capabilities.torch) await track.applyConstraints({ advanced: [{ torch: false }] });
+      } catch(e) {}
+    }
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
   clearInterval(medicionInterval);
   midiendo = false;
   cerrarModal('modal-camara');
