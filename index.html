@@ -405,6 +405,11 @@
       <div class="func-nombre">Mis pastillas</div>
       <div class="func-desc">Horarios del día</div>
     </div>
+    <div class="func-card" style="border-color:rgba(241,196,15,0.4);background:rgba(241,196,15,0.1);grid-column:span 2" onclick="compartirUbicacion()">
+      <div class="func-icono">📍</div>
+      <div class="func-nombre">Compartir mi ubicación</div>
+      <div class="func-desc">Manda tu ubicación exacta al familiar por WhatsApp</div>
+    </div>
   </div>
 
   <!-- PASTILLAS HOY -->
@@ -552,6 +557,8 @@ function mostrarPrincipal() {
   renderPastillasHoy();
   programarAlertas();
   cambiarPantalla('principal');
+  // Activar detector de caídas automáticamente
+  activarDetectorAuto();
 }
 
 // ═══════════════════════════════════
@@ -614,15 +621,48 @@ function programarAlertas() {
 }
 
 // ═══════════════════════════════════
+// GPS
+// ═══════════════════════════════════
+let ultimaUbicacion = null;
+
+function obtenerUbicacion() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) { resolve(null); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        ultimaUbicacion = { lat: pos.coords.latitude, lng: pos.coords.longitude, precision: Math.round(pos.coords.accuracy) };
+        resolve(ultimaUbicacion);
+      },
+      () => resolve(null),
+      { timeout: 8000, enableHighAccuracy: true }
+    );
+  });
+}
+
+function linkMaps(loc) {
+  if (!loc) return '';
+  return `\n\n📍 Ubicación: https://maps.google.com/?q=${loc.lat},${loc.lng}\n(Precisión: ~${loc.precision}m)`;
+}
+
+async function compartirUbicacion() {
+  mostrarToast('📡 Obteniendo ubicación...');
+  const loc = await obtenerUbicacion();
+  if (!loc) { mostrarToast('⚠️ No se pudo obtener ubicación'); return; }
+  const texto = encodeURIComponent(`📍 Ubicación actual de ${config.nombre}\nhttps://maps.google.com/?q=${loc.lat},${loc.lng}\nPrecisión: ~${loc.precision}m\n⏰ ${new Date().toLocaleString('es-MX')}`);
+  window.open(`https://wa.me/${config.whatsapp}?text=${texto}`, '_blank');
+}
+
+// ═══════════════════════════════════
 // SOS
 // ═══════════════════════════════════
 function activarSOS() {
   sosCount = 5;
   document.getElementById('countdown-num').textContent = sosCount;
   document.getElementById('alerta-sos').classList.add('visible');
-
-  // Vibrar si es posible
   if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+
+  // Obtener GPS en segundo plano mientras cuenta
+  obtenerUbicacion();
 
   sosTimer = setInterval(() => {
     sosCount--;
@@ -630,7 +670,8 @@ function activarSOS() {
     if (navigator.vibrate) navigator.vibrate(300);
     if (sosCount <= 0) {
       clearInterval(sosTimer);
-      enviarAlertaWhatsApp('🚨 EMERGENCIA SOS', `¡AYUDA! ${config.nombre} presionó el botón de emergencia. Por favor comunícate de inmediato.`);
+      const msj = `¡AYUDA! ${config.nombre} presionó el botón de emergencia. Por favor comunícate de inmediato.${linkMaps(ultimaUbicacion)}`;
+      enviarAlertaWhatsApp('🚨 EMERGENCIA SOS', msj);
     }
   }, 1000);
 }
@@ -696,6 +737,16 @@ function abrirModal(tipo) {
     iniciarCamara();
   } else if (tipo === 'caida') {
     document.getElementById('modal-caida').classList.add('abierto');
+    // Sincronizar UI con estado real del detector
+    const btn = document.getElementById('btn-caida');
+    const txt = document.getElementById('caida-estado-txt');
+    if (caideDetectorActivo) {
+      btn.textContent = '⏹ Desactivar detector';
+      txt.innerHTML = '<div class="caida-activo">✅ Detector ACTIVO — Vigilando en segundo plano</div>';
+    } else {
+      btn.textContent = '▶️ Activar detector';
+      txt.innerHTML = '<div class="caida-estado">⏸️ Detector inactivo</div>';
+    }
   } else if (tipo === 'pastillas') {
     renderPastillasModal();
     document.getElementById('modal-pastillas').classList.add('abierto');
@@ -942,17 +993,38 @@ function activarDetectorCaida() {
 
 function iniciarDetector() {
   caideDetectorActivo = true;
-  document.getElementById('btn-caida').textContent = '⏹ Desactivar detector';
-  document.getElementById('caida-estado-txt').innerHTML = '<div class="caida-activo">✅ Detector ACTIVO — Vigilando movimiento</div>';
+  // Actualizar UI del modal si está abierto
+  const btn = document.getElementById('btn-caida');
+  const txt = document.getElementById('caida-estado-txt');
+  if (btn) btn.textContent = '⏹ Desactivar detector';
+  if (txt) txt.innerHTML = '<div class="caida-activo">✅ Detector ACTIVO — Vigilando movimiento</div>';
+  // Remover primero para evitar duplicados
+  window.removeEventListener('devicemotion', detectarCaida);
   window.addEventListener('devicemotion', detectarCaida);
-  mostrarToast('🏃 Detector de caídas activado');
 }
 
 function desactivarDetectorCaida() {
   caideDetectorActivo = false;
   window.removeEventListener('devicemotion', detectarCaida);
-  document.getElementById('btn-caida').textContent = '▶️ Activar detector';
-  document.getElementById('caida-estado-txt').innerHTML = '<div class="caida-estado">⏸️ Detector inactivo</div>';
+  const btn = document.getElementById('btn-caida');
+  const txt = document.getElementById('caida-estado-txt');
+  if (btn) btn.textContent = '▶️ Activar detector';
+  if (txt) txt.innerHTML = '<div class="caida-estado">⏸️ Detector inactivo</div>';
+}
+
+// Activar detector automáticamente al abrir la app
+function activarDetectorAuto() {
+  if (typeof DeviceMotionEvent !== 'undefined') {
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      // iOS — pedir permiso con un toque del usuario
+      DeviceMotionEvent.requestPermission().then(r => {
+        if (r === 'granted') iniciarDetector();
+      }).catch(() => {});
+    } else {
+      // Android — no necesita permiso
+      iniciarDetector();
+    }
+  }
 }
 
 let ultimaCaida = 0;
@@ -975,6 +1047,9 @@ let caídaTimeout = null;
 function alertaCaida() {
   if (navigator.vibrate) navigator.vibrate([1000, 500, 1000, 500, 1000]);
 
+  // Obtener GPS en segundo plano
+  obtenerUbicacion();
+
   const estadoEl = document.getElementById('caida-estado-txt');
   if (estadoEl) estadoEl.innerHTML = '<div class="caida-alerta">⚠️ ¡Posible caída detectada!</div>';
 
@@ -989,7 +1064,10 @@ function alertaCaida() {
     document.getElementById('countdown-num').textContent = sosCount;
     if (sosCount <= 0) {
       clearInterval(sosTimer);
-      enviarAlertaWhatsApp('🚨 POSIBLE CAÍDA DETECTADA', `El sensor del teléfono de ${config.nombre} detectó una posible caída. Comunícate inmediatamente.`);
+      const msj = `El sensor del teléfono de ${config.nombre} detectó una posible caída. Comunícate inmediatamente.${linkMaps(ultimaUbicacion)}`;
+      enviarAlertaWhatsApp('🚨 POSIBLE CAÍDA DETECTADA', msj);
+      // Reactivar detector tras alerta
+      setTimeout(() => iniciarDetector(), 3000);
     }
   }, 1000);
 }
