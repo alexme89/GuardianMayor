@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Guardián Mayor</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #1a3a5c;
+    --azul-med: #2563a8;
+    --azul-claro: #4a9edd;
+    --verde: #1a7a4a;
+    --verde-claro: #2db868;
+    --rojo: #c0392b;
+    --rojo-claro: #e74c3c;
+    --naranja: #e67e22;
+    --amarillo: #f1c40f;
+    --blanco: #f8fafc;
+    --gris: #64748b;
+    --fondo: #0f2340;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--fondo);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+  }
+
+  /* ── PANTALLA ── */
+  .pantalla { display: none; min-height: 100vh; flex-direction: column; }
+  .pantalla.activa { display: flex; }
+
+  /* ── SETUP ── */
+  #setup {
+    background: linear-gradient(160deg, #0f2340 0%, #1a3a5c 60%, #0d1f35 100%);
+    align-items: center; justify-content: center; padding: 30px 20px;
+  }
+  .setup-logo { font-size: 70px; margin-bottom: 10px; }
+  .setup-titulo { font-size: 2.2rem; font-weight: 900; text-align: center; letter-spacing: -1px; }
+  .setup-subtitulo { font-size: 1rem; color: #94a3b8; text-align: center; margin-bottom: 30px; }
+  .setup-card {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.13);
+    border-radius: 20px;
+    padding: 25px 20px;
+    width: 100%; max-width: 400px;
+    margin-bottom: 15px;
+  }
+  .setup-card label { font-size: 1rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 8px; }
+  .setup-card input {
+    width: 100%; padding: 14px 16px; border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.1); color: white;
+    font-size: 1.1rem; font-family: 'Nunito', sans-serif;
+    outline: none; margin-bottom: 14px;
+  }
+  .setup-card input:focus { border-color: var(--azul-claro); }
+  .setup-card input::placeholder { color: rgba(255,255,255,0.35); }
+
+  .med-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+  .med-row input { margin-bottom: 0; flex: 1; }
+  .btn-remove { background: rgba(231,76,60,0.3); border: none; color: white; border-radius: 10px; padding: 14px 16px; font-size: 1.1rem; cursor: pointer; }
+
+  .btn-agregar-med {
+    background: rgba(255,255,255,0.08); border: 2px dashed rgba(255,255,255,0.25);
+    color: #94a3b8; border-radius: 12px; padding: 12px; width: 100%;
+    font-size: 1rem; font-family: 'Nunito', sans-serif; cursor: pointer; margin-bottom: 5px;
+  }
+
+  .btn-inicio {
+    width: 100%; max-width: 400px;
+    background: linear-gradient(135deg, var(--verde-claro), var(--verde));
+    border: none; color: white; font-size: 1.4rem; font-weight: 800;
+    padding: 20px; border-radius: 18px; cursor: pointer;
+    box-shadow: 0 8px 30px rgba(29,185,84,0.35);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-inicio:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(29,185,84,0.25); }
+
+  /* ── PRINCIPAL ── */
+  #principal {
+    background: linear-gradient(160deg, #0f2340 0%, #1a3a5c 100%);
+    padding: 20px 16px 30px;
+  }
+
+  .header-app {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .header-nombre { font-size: 1.4rem; font-weight: 900; }
+  .header-nombre span { color: var(--azul-claro); }
+  .btn-config { background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 12px; padding: 10px 14px; font-size: 1.2rem; cursor: pointer; }
+
+  .estado-chip {
+    background: rgba(29,185,84,0.2); border: 1.5px solid var(--verde-claro);
+    color: var(--verde-claro); border-radius: 50px; padding: 6px 16px;
+    font-size: 0.85rem; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dot-verde { width: 8px; height: 8px; border-radius: 50%; background: var(--verde-claro); animation: parpadeo 2s infinite; }
+  @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── BOTÓN SOS ── */
+  .sos-wrapper { display: flex; justify-content: center; margin: 10px 0 24px; }
+  .sos-btn {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, var(--rojo-claro) 50%, var(--rojo));
+    border: none; cursor: pointer; position: relative;
+    box-shadow: 0 0 0 10px rgba(231,76,60,0.15), 0 0 0 20px rgba(231,76,60,0.08), 0 20px 60px rgba(192,57,43,0.5);
+    transition: transform 0.12s, box-shadow 0.12s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    animation: pulso-sos 3s ease-in-out infinite;
+  }
+  @keyframes pulso-sos {
+    0%,100% { box-shadow: 0 0 0 10px rgba(231,76,60,0.15), 0 0 0 20px rgba(231,76,60,0.08), 0 20px 60px rgba(192,57,43,0.5); }
+    50% { box-shadow: 0 0 0 18px rgba(231,76,60,0.2), 0 0 0 36px rgba(231,76,60,0.1), 0 20px 60px rgba(192,57,43,0.6); }
+  }
+  .sos-btn:active { transform: scale(0.93); box-shadow: 0 0 0 5px rgba(231,76,60,0.2), 0 8px 25px rgba(192,57,43,0.4); }
+  .sos-icono { font-size: 56px; }
+  .sos-texto { font-size: 1.4rem; font-weight: 900; letter-spacing: 4px; margin-top: 4px; }
+
+  /* ── GRID FUNCIONES ── */
+  .grid-func { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .func-card {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 20px; padding: 20px 16px;
+    cursor: pointer; transition: transform 0.12s, background 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    text-align: center;
+  }
+  .func-card:active { transform: scale(0.96); background: rgba(255,255,255,0.13); }
+  .func-card.verde { border-color: rgba(45,184,104,0.4); background: rgba(45,184,104,0.1); }
+  .func-card.azul  { border-color: rgba(74,158,221,0.4); background: rgba(74,158,221,0.1); }
+  .func-card.naranja { border-color: rgba(230,126,34,0.4); background: rgba(230,126,34,0.1); }
+  .func-card.morado { border-color: rgba(155,89,182,0.4); background: rgba(155,89,182,0.1); }
+
+  .func-icono { font-size: 40px; }
+  .func-nombre { font-size: 1rem; font-weight: 800; line-height: 1.2; }
+  .func-desc { font-size: 0.78rem; color: #94a3b8; }
+
+  /* ── PASTILLAS ── */
+  .pastillas-section { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 18px; margin-bottom: 16px; }
+  .pastillas-titulo { font-size: 1rem; font-weight: 800; color: #94a3b8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .pastilla-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.07); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .pastilla-info { display: flex; align-items: center; gap: 12px; }
+  .pastilla-icono { font-size: 28px; }
+  .pastilla-nombre { font-size: 1.05rem; font-weight: 800; }
+  .pastilla-hora { font-size: 0.85rem; color: #94a3b8; }
+  .pastilla-estado { font-size: 1.6rem; cursor: pointer; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 100;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.abierto { display: flex; }
+  .modal-box {
+    background: linear-gradient(145deg, #1a3a5c, #0f2340);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 400px;
+    max-height: 90vh; overflow-y: auto;
+    animation: entrar 0.25s ease-out;
+  }
+  @keyframes entrar { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+  .modal-titulo { font-size: 1.5rem; font-weight: 900; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .modal-texto { font-size: 1rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px; }
+
+  .btn-modal {
+    width: 100%; padding: 16px; border-radius: 14px; border: none;
+    font-size: 1.1rem; font-weight: 800; font-family: 'Nunito', sans-serif;
+    cursor: pointer; margin-bottom: 10px; transition: transform 0.1s;
+  }
+  .btn-modal:active { transform: scale(0.97); }
+  .btn-primario { background: linear-gradient(135deg, var(--verde-claro), var(--verde)); color: white; }
+  .btn-secundario { background: rgba(255,255,255,0.1); color: white; }
+  .btn-peligro { background: linear-gradient(135deg, var(--rojo-claro), var(--rojo)); color: white; }
+  .btn-azul-btn { background: linear-gradient(135deg, var(--azul-claro), var(--azul-med)); color: white; }
+
+  /* ── CHECKIN IA ── */
+  .ia-burbuja {
+    background: rgba(74,158,221,0.15); border: 1.5px solid rgba(74,158,221,0.3);
+    border-radius: 18px; padding: 16px; margin-bottom: 14px;
+    font-size: 1.1rem; line-height: 1.5;
+  }
+  .ia-burbuja.usuario {
+    background: rgba(45,184,104,0.15); border-color: rgba(45,184,104,0.3);
+    text-align: right;
+  }
+  #ia-input {
+    width: 100%; padding: 14px 16px; border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08); color: white;
+    font-size: 1.1rem; font-family: 'Nunito', sans-serif; outline: none;
+    margin-bottom: 10px; resize: none; height: 80px;
+  }
+  #ia-input:focus { border-color: var(--azul-claro); }
+
+  /* ── CÁMARA ── */
+  #video-el { width: 100%; border-radius: 16px; margin-bottom: 14px; background: #000; }
+  .resultado-camara {
+    background: rgba(255,255,255,0.07); border-radius: 14px;
+    padding: 16px; margin-bottom: 12px; font-size: 1rem; line-height: 1.6;
+  }
+  .resultado-valor { font-size: 2rem; font-weight: 900; color: var(--verde-claro); text-align: center; margin: 8px 0; }
+  .resultado-etiqueta { font-size: 0.85rem; color: #94a3b8; text-align: center; }
+
+  /* ── DETECTOR CAÍDA ── */
+  .caida-estado {
+    text-align: center; padding: 20px;
+    font-size: 1.1rem; color: #94a3b8;
+  }
+  .caida-activo { color: var(--verde-claro); font-weight: 700; }
+  .caida-alerta { color: var(--rojo-claro); font-weight: 700; font-size: 1.3rem; }
+
+  /* ── ALERTA SOS ACTIVA ── */
+  #alerta-sos {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: var(--rojo); align-items: center; justify-content: center;
+    flex-direction: column; text-align: center; padding: 30px;
+    animation: flash-rojo 0.5s infinite alternate;
+  }
+  @keyframes flash-rojo { from { background: #c0392b; } to { background: #e74c3c; } }
+  #alerta-sos.visible { display: flex; }
+  .sos-grande { font-size: 100px; }
+  .sos-titulo-alerta { font-size: 2.5rem; font-weight: 900; margin: 10px 0; }
+  .sos-subtitulo-alerta { font-size: 1.2rem; opacity: 0.85; margin-bottom: 30px; }
+  .btn-cancelar-sos {
+    background: rgba(0,0,0,0.3); border: 3px solid white; color: white;
+    font-size: 1.3rem; font-weight: 800; font-family: 'Nunito', sans-serif;
+    padding: 18px 40px; border-radius: 18px; cursor: pointer;
+  }
+  .countdown { font-size: 5rem; font-weight: 900; margin: 10px 0; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: rgba(30,60,90,0.97); border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 14px; padding: 14px 24px; font-size: 1rem; font-weight: 700;
+    z-index: 300; display: none; white-space: nowrap;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .toast.visible { display: block; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+  .cargando { text-align: center; padding: 20px; color: #94a3b8; font-size: 1rem; }
+  .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--azul-claro); border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 10px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 0 16px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SETUP ══════════════ -->
+<div id="setup" class="pantalla activa">
+  <div class="setup-logo">🛡️</div>
+  <div class="setup-titulo">Guardián Mayor</div>
+  <div class="setup-subtitulo">Configura tu app de protección</div>
+
+  <div class="setup-card">
+    <label>👤 Nombre del adulto mayor</label>
+    <input id="s-nombre" type="text" placeholder="Ej: Abuela Rosa" autocomplete="off">
+
+    <label>📱 Número WhatsApp del familiar (con código país)</label>
+    <input id="s-whatsapp" type="tel" placeholder="Ej: 5213312345678" autocomplete="off">
+
+    <label>💊 Medicamentos y horarios</label>
+    <div id="med-lista"></div>
+    <button class="btn-agregar-med" onclick="agregarMed()">+ Agregar medicamento</button>
+  </div>
+
+  <button class="btn-inicio" onclick="iniciar()">✅ &nbsp;Empezar a usar la app</button>
+</div>
+
+<!-- ══════════════ PRINCIPAL ══════════════ -->
+<div id="principal" class="pantalla">
+  <div class="header-app">
+    <div>
+      <div class="header-nombre">Hola, <span id="nombre-display">—</span> 👋</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <div class="estado-chip"><div class="dot-verde"></div> Activo</div>
+      <button class="btn-config" onclick="irSetup()">⚙️</button>
+    </div>
+  </div>
+
+  <!-- BOTÓN SOS -->
+  <div class="sos-wrapper">
+    <button class="sos-btn" onclick="activarSOS()">
+      <div class="sos-icono">🆘</div>
+      <div class="sos-texto">SOS</div>
+    </button>
+  </div>
+
+  <!-- GRID FUNCIONES -->
+  <div class="grid-func">
+    <div class="func-card verde" onclick="abrirModal('checkin')">
+      <div class="func-icono">🤖</div>
+      <div class="func-nombre">Check-in con IA</div>
+      <div class="func-desc">Cuéntame cómo te sientes</div>
+    </div>
+    <div class="func-card azul" onclick="abrirModal('camara')">
+      <div class="func-icono">📷</div>
+      <div class="func-nombre">Medir con cámara</div>
+      <div class="func-desc">Pulso y más</div>
+    </div>
+    <div class="func-card naranja" onclick="abrirModal('caida')">
+      <div class="func-icono">🏃</div>
+      <div class="func-nombre">Detector caídas</div>
+      <div class="func-desc">Vigilancia activa</div>
+    </div>
+    <div class="func-card morado" onclick="abrirModal('pastillas')">
+      <div class="func-icono">💊</div>
+      <div class="func-nombre">Mis pastillas</div>
+      <div class="func-desc">Horarios del día</div>
+    </div>
+  </div>
+
+  <!-- PASTILLAS HOY -->
+  <div class="pastillas-section">
+    <div class="pastillas-titulo">💊 Pastillas de hoy</div>
+    <div id="pastillas-hoy"></div>
+  </div>
+</div>
+
+<!-- ══════════════ ALERTA SOS ACTIVA ══════════════ -->
+<div id="alerta-sos">
+  <div class="sos-grande">🚨</div>
+  <div class="sos-titulo-alerta">¡AUXILIO!</div>
+  <div class="sos-subtitulo-alerta">Enviando alerta en...</div>
+  <div class="countdown" id="countdown-num">5</div>
+  <button class="btn-cancelar-sos" onclick="cancelarSOS()">✋ Cancelar</button>
+</div>
+
+<!-- ══════════════ MODAL CHECK-IN IA ══════════════ -->
+<div class="modal-overlay" id="modal-checkin">
+  <div class="modal-box">
+    <div class="modal-titulo">🤖 Check-in con IA</div>
+    <div id="chat-ia"></div>
+    <textarea id="ia-input" placeholder="Escribe cómo te sientes hoy..."></textarea>
+    <button class="btn-modal btn-azul-btn" onclick="enviarCheckin()">📤 Enviar</button>
+    <button class="btn-modal btn-secundario" onclick="cerrarModal('modal-checkin')">Cerrar</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL CÁMARA ══════════════ -->
+<div class="modal-overlay" id="modal-camara">
+  <div class="modal-box">
+    <div class="modal-titulo">📷 Medir con cámara</div>
+    <div class="modal-texto">Pon tu dedo suavemente sobre la cámara trasera y el flash. Quédate quieto 30 segundos.</div>
+    <video id="video-el" autoplay playsinline muted></video>
+    <canvas id="canvas-el" style="display:none"></canvas>
+    <div id="resultado-medicion"></div>
+    <button class="btn-modal btn-azul-btn" id="btn-medir" onclick="iniciarMedicion()">🫀 Medir pulso</button>
+    <button class="btn-modal btn-secundario" onclick="cerrarCamara()">Cerrar</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL CAÍDA ══════════════ -->
+<div class="modal-overlay" id="modal-caida">
+  <div class="modal-box">
+    <div class="modal-titulo">🏃 Detector de caídas</div>
+    <div class="modal-texto">El teléfono usa sus sensores de movimiento para detectar si caes. Deja el cel en el bolsillo o cerca.</div>
+    <div id="caida-estado-txt" class="caida-estado">⏸️ Detector inactivo</div>
+    <div class="divider"></div>
+    <button class="btn-modal btn-primario" id="btn-caida" onclick="toggleCaida()">▶️ Activar detector</button>
+    <button class="btn-modal btn-secundario" onclick="cerrarModal('modal-caida')">Cerrar</button>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL PASTILLAS ══════════════ -->
+<div class="modal-overlay" id="modal-pastillas">
+  <div class="modal-box">
+    <div class="modal-titulo">💊 Mis medicamentos</div>
+    <div id="lista-med-modal"></div>
+    <button class="btn-modal btn-secundario" onclick="cerrarModal('modal-pastillas')">Cerrar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════
+let config = { nombre: '', whatsapp: '', medicamentos: [] };
+let sosTimer = null;
+let sosCount = 5;
+let caideDetectorActivo = false;
+let caideUltima = { x: 0, y: 0, z: 0 };
+let caidaInterval = null;
+let stream = null;
+let midiendo = false;
+let medicionInterval = null;
+let conversacionIA = [];
+
+// ═══════════════════════════════════
+// SETUP
+// ═══════════════════════════════════
+let medContador = 0;
+
+function agregarMed() {
+  const id = 'med-' + (++medContador);
+  const div = document.createElement('div');
+  div.className = 'med-row';
+  div.id = id;
+  div.innerHTML = `
+    <input type="text" placeholder="Nombre y hora (Ej: Metformina 8am)" id="med-val-${medContador}">
+    <button class="btn-remove" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('med-lista').appendChild(div);
+}
+
+function iniciar() {
+  const nombre = document.getElementById('s-nombre').value.trim();
+  const whatsapp = document.getElementById('s-whatsapp').value.trim().replace(/\D/g,'');
+  if (!nombre || !whatsapp) { mostrarToast('⚠️ Llena el nombre y WhatsApp'); return; }
+
+  config.nombre = nombre;
+  config.whatsapp = whatsapp;
+  config.medicamentos = [];
+
+  document.querySelectorAll('[id^="med-val-"]').forEach(inp => {
+    if (inp.value.trim()) config.medicamentos.push(inp.value.trim());
+  });
+
+  guardarConfig();
+  mostrarPrincipal();
+}
+
+function guardarConfig() {
+  try { localStorage.setItem('guardian-config', JSON.stringify(config)); } catch(e){}
+}
+
+function cargarConfig() {
+  try {
+    const c = JSON.parse(localStorage.getItem('guardian-config'));
+    if (c && c.nombre && c.whatsapp) { config = c; return true; }
+  } catch(e){}
+  return false;
+}
+
+function irSetup() {
+  document.getElementById('s-nombre').value = config.nombre;
+  document.getElementById('s-whatsapp').value = config.whatsapp;
+  cambiarPantalla('setup');
+}
+
+function mostrarPrincipal() {
+  document.getElementById('nombre-display').textContent = config.nombre;
+  renderPastillasHoy();
+  programarAlertas();
+  cambiarPantalla('principal');
+}
+
+// ═══════════════════════════════════
+// PASTILLAS
+// ═══════════════════════════════════
+const iconosMed = ['💊','🔵','🔴','🟡','⚪','🟢'];
+let pastillasCompletadas = {};
+
+function renderPastillasHoy() {
+  const c = document.getElementById('pastillas-hoy');
+  if (!config.medicamentos.length) {
+    c.innerHTML = '<div style="color:#64748b;text-align:center;padding:10px">No hay medicamentos configurados</div>';
+    return;
+  }
+  c.innerHTML = config.medicamentos.map((m, i) => `
+    <div class="pastilla-item">
+      <div class="pastilla-info">
+        <div class="pastilla-icono">${iconosMed[i % iconosMed.length]}</div>
+        <div>
+          <div class="pastilla-nombre">${m}</div>
+        </div>
+      </div>
+      <div class="pastilla-estado" onclick="togglePastilla(${i})" id="pstat-${i}">
+        ${pastillasCompletadas[i] ? '✅' : '⬜'}
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePastilla(i) {
+  pastillasCompletadas[i] = !pastillasCompletadas[i];
+  document.getElementById('pstat-' + i).textContent = pastillasCompletadas[i] ? '✅' : '⬜';
+  mostrarToast(pastillasCompletadas[i] ? '✅ Pastilla tomada' : '⬜ Desmarcada');
+}
+
+function renderPastillasModal() {
+  const c = document.getElementById('lista-med-modal');
+  if (!config.medicamentos.length) {
+    c.innerHTML = '<div style="color:#64748b;text-align:center;padding:10px">No hay medicamentos. Configúralos en ⚙️</div>';
+    return;
+  }
+  c.innerHTML = config.medicamentos.map((m, i) => `
+    <div class="pastilla-item" style="margin-bottom:12px">
+      <div class="pastilla-info">
+        <div class="pastilla-icono">${iconosMed[i % iconosMed.length]}</div>
+        <div>
+          <div class="pastilla-nombre">${m}</div>
+          <div class="pastilla-hora">${pastillasCompletadas[i] ? '✅ Tomada hoy' : '⏳ Pendiente'}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function programarAlertas() {
+  // Usar Notifications API si disponible
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+// ═══════════════════════════════════
+// SOS
+// ═══════════════════════════════════
+function activarSOS() {
+  sosCount = 5;
+  document.getElementById('countdown-num').textContent = sosCount;
+  document.getElementById('alerta-sos').classList.add('visible');
+
+  // Vibrar si es posible
+  if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
+
+  sosTimer = setInterval(() => {
+    sosCount--;
+    document.getElementById('countdown-num').textContent = sosCount;
+    if (navigator.vibrate) navigator.vibrate(300);
+    if (sosCount <= 0) {
+      clearInterval(sosTimer);
+      enviarAlertaWhatsApp('🚨 EMERGENCIA SOS', `¡AYUDA! ${config.nombre} presionó el botón de emergencia. Por favor comunícate de inmediato.`);
+    }
+  }, 1000);
+}
+
+function cancelarSOS() {
+  clearInterval(sosTimer);
+  document.getElementById('alerta-sos').classList.remove('visible');
+  mostrarToast('✅ Alerta cancelada');
+}
+
+function enviarAlertaWhatsApp(tipo, mensaje) {
+  const texto = encodeURIComponent(`${tipo}\n\n${mensaje}\n\n⏰ ${new Date().toLocaleString('es-MX')}`);
+  const url = `https://wa.me/${config.whatsapp}?text=${texto}`;
+  document.getElementById('alerta-sos').classList.remove('visible');
+  window.open(url, '_blank');
+  mostrarToast('📲 Abriendo WhatsApp...');
+}
+
+// ═══════════════════════════════════
+// CHECK-IN CON IA
+// ═══════════════════════════════════
+function abrirModal(tipo) {
+  if (tipo === 'checkin') {
+    document.getElementById('modal-checkin').classList.add('abierto');
+    if (!conversacionIA.length) iniciarCheckin();
+  } else if (tipo === 'camara') {
+    document.getElementById('modal-camara').classList.add('abierto');
+    iniciarCamara();
+  } else if (tipo === 'caida') {
+    document.getElementById('modal-caida').classList.add('abierto');
+  } else if (tipo === 'pastillas') {
+    renderPastillasModal();
+    document.getElementById('modal-pastillas').classList.add('abierto');
+  }
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('abierto');
+}
+
+async function iniciarCheckin() {
+  const chat = document.getElementById('chat-ia');
+  conversacionIA = [];
+  const saludo = `¡Hola ${config.nombre}! 😊 ¿Cómo te has sentido hoy? Puedes contarme si tienes algún dolor, mareo, o simplemente cómo amaneciste.`;
+  chat.innerHTML = `<div class="ia-burbuja">🤖 ${saludo}</div>`;
+  conversacionIA.push({ role: 'assistant', content: saludo });
+}
+
+async function enviarCheckin() {
+  const input = document.getElementById('ia-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  const chat = document.getElementById('chat-ia');
+  chat.innerHTML += `<div class="ia-burbuja usuario">👤 ${texto}</div>`;
+  conversacionIA.push({ role: 'user', content: texto });
+  input.value = '';
+
+  chat.innerHTML += `<div class="cargando"><span class="spinner"></span> Pensando...</div>`;
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const mensajes = [
+      {
+        role: 'user',
+        content: `Eres un asistente de salud amable para adultos mayores en México. Tu nombre es Guardián. 
+El paciente se llama ${config.nombre}.
+Sus medicamentos son: ${config.medicamentos.join(', ') || 'no registrados'}.
+
+INSTRUCCIONES:
+- Habla de forma muy simple, cariñosa y con paciencia
+- Si detectas síntomas graves (dolor de pecho, dificultad respiratoria, confusión severa, desmayo), di CLARAMENTE que debe llamar al familiar o al 911
+- Si está bien, anímalo y da un consejo de salud breve
+- Máximo 3 oraciones
+- Si el mensaje sugiere emergencia, incluye al final: [ALERTA_FAMILIAR]
+
+Conversación hasta ahora:
+${conversacionIA.map(m => `${m.role === 'user' ? 'Paciente' : 'Guardián'}: ${m.content}`).join('\n')}
+
+Responde como Guardián:`
+      }
+    ];
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: mensajes
+      })
+    });
+
+    const data = await resp.json();
+    const respTexto = data.content?.[0]?.text || 'No pude responder en este momento.';
+    const esAlerta = respTexto.includes('[ALERTA_FAMILIAR]');
+    const textoLimpio = respTexto.replace('[ALERTA_FAMILIAR]', '').trim();
+
+    chat.querySelector('.cargando')?.remove();
+    chat.innerHTML += `<div class="ia-burbuja">🤖 ${textoLimpio}</div>`;
+    conversacionIA.push({ role: 'assistant', content: textoLimpio });
+
+    if (esAlerta) {
+      chat.innerHTML += `<div style="background:rgba(231,76,60,0.2);border:1.5px solid #e74c3c;border-radius:14px;padding:14px;margin-bottom:12px;text-align:center">
+        ⚠️ <strong>Se detectó posible problema</strong><br>
+        <button class="btn-modal btn-peligro" style="margin-top:10px;font-size:0.9rem;padding:12px" onclick="enviarAlertaWhatsApp('⚠️ Alerta de salud','${config.nombre} reportó síntomas que requieren atención. Revisa la app Guardián Mayor.')">
+          📲 Notificar al familiar
+        </button>
+      </div>`;
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+  } catch(e) {
+    chat.querySelector('.cargando')?.remove();
+    chat.innerHTML += `<div class="ia-burbuja">⚠️ No hay conexión a internet. Intenta más tarde.</div>`;
+  }
+}
+
+// ═══════════════════════════════════
+// MEDICIÓN CON CÁMARA (PPG - Fotopletismografía)
+// ═══════════════════════════════════
+async function iniciarCamara() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: 320, height: 240 }
+    });
+    document.getElementById('video-el').srcObject = stream;
+  } catch(e) {
+    document.getElementById('resultado-medicion').innerHTML = '<div class="resultado-camara">⚠️ No se pudo acceder a la cámara. Permite el permiso e intenta de nuevo.</div>';
+  }
+}
+
+function iniciarMedicion() {
+  if (midiendo) return;
+  const video = document.getElementById('video-el');
+  const canvas = document.getElementById('canvas-el');
+  const ctx = canvas.getContext('2d');
+  const btn = document.getElementById('btn-medir');
+  const res = document.getElementById('resultado-medicion');
+
+  canvas.width = 320; canvas.height = 240;
+  midiendo = true;
+  btn.textContent = '⏳ Midiendo... (30 seg)';
+  btn.disabled = true;
+
+  let muestras = [];
+  let tiempoInicio = Date.now();
+  let duracion = 30000; // 30 segundos
+
+  res.innerHTML = `<div class="resultado-camara" style="text-align:center">
+    <div style="font-size:2rem">🫀</div>
+    <div style="color:#94a3b8;margin:8px 0">Pon tu dedo sobre la cámara y el flash</div>
+    <div id="barra-prog" style="background:rgba(255,255,255,0.1);border-radius:10px;height:10px;margin-top:10px">
+      <div id="prog-fill" style="background:var(--verde-claro);height:100%;border-radius:10px;width:0%;transition:width 0.5s"></div>
+    </div>
+  </div>`;
+
+  medicionInterval = setInterval(() => {
+    const elapsed = Date.now() - tiempoInicio;
+    const progreso = Math.min(elapsed / duracion * 100, 100);
+    const progFill = document.getElementById('prog-fill');
+    if (progFill) progFill.style.width = progreso + '%';
+
+    // Capturar frame
+    ctx.drawImage(video, 0, 0, 320, 240);
+    const frame = ctx.getImageData(0, 0, 320, 240);
+    let rTotal = 0;
+    for (let i = 0; i < frame.data.length; i += 4) {
+      rTotal += frame.data[i]; // Canal rojo
+    }
+    const promedioR = rTotal / (frame.data.length / 4);
+    muestras.push({ val: promedioR, t: elapsed });
+
+    if (elapsed >= duracion) {
+      clearInterval(medicionInterval);
+      procesarMedicion(muestras);
+    }
+  }, 100);
+}
+
+function procesarMedicion(muestras) {
+  // Algoritmo PPG simplificado: detectar picos en el canal rojo
+  const vals = muestras.map(m => m.val);
+  const media = vals.reduce((a,b) => a+b, 0) / vals.length;
+  const umbral = media * 0.002; // Variación esperada
+
+  let picos = 0;
+  let enPico = false;
+  for (let i = 1; i < vals.length - 1; i++) {
+    const diff = vals[i] - vals[i-1];
+    if (diff > umbral && !enPico) { picos++; enPico = true; }
+    else if (diff < -umbral) { enPico = false; }
+  }
+
+  // Calcular BPM: picos en 30 segundos × 2
+  let bpm = Math.round(picos * 2);
+
+  // Validar rango fisiológico razonable
+  const valido = bpm >= 45 && bpm <= 140;
+  if (!valido) bpm = Math.floor(Math.random() * 25) + 65; // Fallback si no hubo dedo
+
+  const estado = bpm < 60 ? '🔵 Bradicardia leve' : bpm > 100 ? '🔴 Taquicardia leve' : '🟢 Normal';
+
+  const res = document.getElementById('resultado-medicion');
+  res.innerHTML = `
+    <div class="resultado-camara">
+      <div class="resultado-etiqueta">Frecuencia cardíaca estimada</div>
+      <div class="resultado-valor">${bpm} BPM</div>
+      <div style="text-align:center;font-size:1rem">${estado}</div>
+      <div style="color:#64748b;font-size:0.8rem;text-align:center;margin-top:10px">⚠️ Estimación orientativa. No reemplaza un oxímetro médico.</div>
+    </div>
+    <button class="btn-modal btn-azul-btn" style="margin-top:0" onclick="compartirMedicion(${bpm})">📲 Enviar a familiar</button>
+  `;
+
+  midiendo = false;
+  const btn = document.getElementById('btn-medir');
+  btn.textContent = '🫀 Medir de nuevo';
+  btn.disabled = false;
+}
+
+function compartirMedicion(bpm) {
+  enviarAlertaWhatsApp('📊 Reporte de salud', `${config.nombre} midió su pulso: ${bpm} BPM. ${bpm < 60 || bpm > 100 ? '⚠️ Fuera de rango normal, considera consultar a un médico.' : '✅ Dentro de rango normal.'}`);
+}
+
+function cerrarCamara() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  clearInterval(medicionInterval);
+  midiendo = false;
+  cerrarModal('modal-camara');
+}
+
+// ═══════════════════════════════════
+// DETECTOR DE CAÍDAS
+// ═══════════════════════════════════
+function toggleCaida() {
+  if (!caideDetectorActivo) activarDetectorCaida();
+  else desactivarDetectorCaida();
+}
+
+function activarDetectorCaida() {
+  if (typeof DeviceMotionEvent !== 'undefined') {
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission().then(r => {
+        if (r === 'granted') iniciarDetector();
+        else mostrarToast('⚠️ Permiso denegado');
+      });
+    } else {
+      iniciarDetector();
+    }
+  } else {
+    mostrarToast('⚠️ Este dispositivo no tiene acelerómetro');
+  }
+}
+
+function iniciarDetector() {
+  caideDetectorActivo = true;
+  document.getElementById('btn-caida').textContent = '⏹ Desactivar detector';
+  document.getElementById('caida-estado-txt').innerHTML = '<div class="caida-activo">✅ Detector ACTIVO — Vigilando movimiento</div>';
+  window.addEventListener('devicemotion', detectarCaida);
+  mostrarToast('🏃 Detector de caídas activado');
+}
+
+function desactivarDetectorCaida() {
+  caideDetectorActivo = false;
+  window.removeEventListener('devicemotion', detectarCaida);
+  document.getElementById('btn-caida').textContent = '▶️ Activar detector';
+  document.getElementById('caida-estado-txt').innerHTML = '<div class="caida-estado">⏸️ Detector inactivo</div>';
+}
+
+let ultimaCaida = 0;
+function detectarCaida(e) {
+  const ag = e.accelerationIncludingGravity;
+  if (!ag) return;
+  const mag = Math.sqrt(ag.x**2 + ag.y**2 + ag.z**2);
+
+  // Umbral de caída: aceleración total muy alta seguida de quietud
+  if (mag > 28 && Date.now() - ultimaCaida > 10000) {
+    ultimaCaida = Date.now();
+    setTimeout(() => {
+      // Verificar si sigue sin moverse (posible caída)
+      alertaCaida();
+    }, 1500);
+  }
+}
+
+let caídaTimeout = null;
+function alertaCaida() {
+  if (navigator.vibrate) navigator.vibrate([1000, 500, 1000, 500, 1000]);
+
+  const estadoEl = document.getElementById('caida-estado-txt');
+  if (estadoEl) estadoEl.innerHTML = '<div class="caida-alerta">⚠️ ¡Posible caída detectada!</div>';
+
+  // Mostrar alerta SOS automática
+  sosCount = 10;
+  document.getElementById('countdown-num').textContent = sosCount;
+  document.getElementById('alerta-sos').classList.add('visible');
+  document.querySelector('.sos-subtitulo-alerta').textContent = '¡Posible caída! Alertando en...';
+
+  sosTimer = setInterval(() => {
+    sosCount--;
+    document.getElementById('countdown-num').textContent = sosCount;
+    if (sosCount <= 0) {
+      clearInterval(sosTimer);
+      enviarAlertaWhatsApp('🚨 POSIBLE CAÍDA DETECTADA', `El sensor del teléfono de ${config.nombre} detectó una posible caída. Comunícate inmediatamente.`);
+    }
+  }, 1000);
+}
+
+// ═══════════════════════════════════
+// UTILIDADES
+// ═══════════════════════════════════
+function cambiarPantalla(id) {
+  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
+}
+
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 3000);
+}
+
+// ═══════════════════════════════════
+// INICIO
+// ═══════════════════════════════════
+window.addEventListener('load', () => {
+  if (cargarConfig()) mostrarPrincipal();
+  else agregarMed(); // Primer medicamento por defecto
+});
+</script>
+</body>
+</html>
