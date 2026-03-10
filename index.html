@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Guardián Mayor</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root {
     --azul: #1a3a5c;
@@ -263,6 +262,23 @@
 
   .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 0 16px; }
 
+  /* ── ASISTENTE ── */
+  .btn-tema {
+    background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12);
+    color: white; border-radius: 12px; padding: 12px 8px;
+    font-size: 0.85rem; font-weight: 700; font-family: 'Nunito', sans-serif;
+    cursor: pointer; text-align: center; transition: background 0.15s;
+    line-height: 1.3;
+  }
+  .btn-tema:active { background: rgba(255,255,255,0.18); }
+  .btn-emergencia {
+    background: rgba(231,76,60,0.15); border: 1.5px solid rgba(231,76,60,0.3);
+    color: white; border-radius: 12px; padding: 10px 8px;
+    font-size: 0.95rem; font-weight: 800; text-decoration: none;
+    text-align: center; display: block; line-height: 1.3;
+  }
+  .btn-emergencia:active { background: rgba(231,76,60,0.35); }
+
   /* ── WIZARD EMAILJS ── */
   .wizard-paso {
     display: flex; gap: 12px; align-items: flex-start;
@@ -306,51 +322,18 @@
     <label>📧 Email del familiar (para alertas automáticas)</label>
     <input id="s-email" type="email" placeholder="Ej: familiar@gmail.com" autocomplete="off">
 
-    <!-- WIZARD EMAILJS -->
+    <!-- WIZARD WEB3FORMS -->
     <div style="background:rgba(74,158,221,0.08);border:1.5px solid rgba(74,158,221,0.25);border-radius:16px;padding:16px;margin-bottom:14px">
       <div style="font-size:1rem;font-weight:900;color:#4a9edd;margin-bottom:4px">⚡ Activar email automático</div>
-      <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:14px;line-height:1.5">Gratis. Sigue los 3 pasos y pega tus claves aquí.</div>
+      <div style="font-size:0.8rem;color:#94a3b8;margin-bottom:14px;line-height:1.5">Gratis · 250 emails/mes · Solo 1 paso</div>
 
-      <!-- PASO 1 -->
-      <div class="wizard-paso">
+      <div class="wizard-paso" style="margin-bottom:0">
         <div class="wizard-num">1</div>
         <div style="flex:1">
-          <div class="wizard-titulo">Crear cuenta gratis en EmailJS</div>
-          <div class="wizard-desc">Abre el link, regístrate con Gmail y vuelve aquí.</div>
-          <a href="https://www.emailjs.com/docs/introduction/how-does-emailjs-work/" target="_blank" class="wizard-btn">🌐 Abrir EmailJS y registrarse →</a>
-        </div>
-      </div>
-
-      <!-- PASO 2 -->
-      <div class="wizard-paso">
-        <div class="wizard-num">2</div>
-        <div style="flex:1">
-          <div class="wizard-titulo">Conectar tu Gmail como servicio</div>
-          <div class="wizard-desc">Dentro de EmailJS → <strong style="color:white">Email Services → Add New Service → Gmail</strong>. Copia el <strong style="color:white">Service ID</strong> que aparece (ej: service_abc123).</div>
-          <a href="https://dashboard.emailjs.com/admin" target="_blank" class="wizard-btn">📋 Ir al panel de EmailJS →</a>
-          <input id="s-ejssvc" type="text" placeholder="Pega aquí tu Service ID" style="font-size:0.95rem;margin-top:8px;margin-bottom:0">
-        </div>
-      </div>
-
-      <!-- PASO 3 -->
-      <div class="wizard-paso">
-        <div class="wizard-num">3</div>
-        <div style="flex:1">
-          <div class="wizard-titulo">Crear plantilla de alerta</div>
-          <div class="wizard-desc">En EmailJS → <strong style="color:white">Email Templates → Create New Template</strong>. En el cuerpo escribe: <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:6px;font-size:0.8rem">{{mensaje}}</code> y <code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:6px;font-size:0.8rem">{{hora}}</code>. Guarda y copia el <strong style="color:white">Template ID</strong>.</div>
-          <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" class="wizard-btn">📝 Ir a Plantillas →</a>
-          <input id="s-ejstpl" type="text" placeholder="Pega aquí tu Template ID" style="font-size:0.95rem;margin-top:8px;margin-bottom:8px">
-        </div>
-      </div>
-
-      <!-- PASO 4: PUBLIC KEY -->
-      <div class="wizard-paso" style="margin-bottom:0">
-        <div class="wizard-num">4</div>
-        <div style="flex:1">
-          <div class="wizard-titulo">Obtener tu Public Key</div>
-          <div class="wizard-desc">En EmailJS → <strong style="color:white">Account → General → Public Key</strong>. Cópiala y pégala aquí.</div>
-          <a href="https://dashboard.emailjs.com/admin/account" target="_blank" class="wizard-btn">🔑 Ir a mi cuenta →</a>
-          <input id="s-ejskey" type="text" placeholder="Pega aquí tu Public Key" style="font-size:0.95rem;margin-top:8px;margin-bottom:0">
+          <div class="wizard-titulo">Obtener tu clave gratis</div>
+          <div class="wizard-desc">Abre el link, escribe el correo del familiar y copia la <strong style="color:white">Access Key</strong> que te mandan al instante.</div>
+          <a href="https://web3forms.com/#start" target="_blank" class="wizard-btn">🌐 Obtener clave gratis →</a>
+          <input id="s-w3fkey" type="text" placeholder="Pega aquí tu Access Key" style="font-size:0.95rem;margin-top:10px;margin-bottom:0">
         </div>
       </div>
     </div>
@@ -428,14 +411,76 @@
   <button class="btn-cancelar-sos" onclick="cancelarSOS()">✋ Cancelar</button>
 </div>
 
-<!-- ══════════════ MODAL CHECK-IN IA ══════════════ -->
+<!-- ══════════════ MODAL ASISTENTE COMPLETO ══════════════ -->
 <div class="modal-overlay" id="modal-checkin">
   <div class="modal-box">
-    <div class="modal-titulo">🤖 Check-in con IA</div>
-    <div id="chat-ia"></div>
-    <textarea id="ia-input" placeholder="Escribe cómo te sientes hoy..."></textarea>
-    <button class="btn-modal btn-azul-btn" onclick="enviarCheckin()">📤 Enviar</button>
-    <button class="btn-modal btn-secundario" onclick="cerrarModal('modal-checkin')">Cerrar</button>
+    <div class="modal-titulo">🤖 Asistente Guardián</div>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <div id="menu-asistente">
+      <div style="font-size:0.85rem;color:#94a3b8;margin-bottom:12px">¿En qué te ayudo hoy?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <button class="btn-tema" onclick="iniciarTema('salud')">🩺 Cómo me siento</button>
+        <button class="btn-tema" onclick="iniciarTema('emergencia')">🚨 Emergencia</button>
+        <button class="btn-tema" onclick="iniciarTema('recetas')">🥗 Recetas sanas</button>
+        <button class="btn-tema" onclick="iniciarTema('tips')">💡 Tips de salud</button>
+        <button class="btn-tema" onclick="iniciarTema('psicologia')">🧠 Cómo me siento emocionalmente</button>
+        <button class="btn-tema" onclick="iniciarTema('medicamentos')">💊 Mis medicamentos</button>
+        <button class="btn-tema" onclick="iniciarTema('ejercicio')">🏃 Ejercicios suaves</button>
+        <button class="btn-tema" onclick="iniciarTema('dormir')">😴 Dormir mejor</button>
+        <button class="btn-tema" onclick="iniciarTema('memoria')">🧩 Ejercicios de memoria</button>
+        <button class="btn-tema" onclick="iniciarTema('nutricion')">🍎 Qué comer hoy</button>
+      </div>
+
+      <!-- NÚMEROS DE EMERGENCIA -->
+      <div style="background:rgba(231,76,60,0.1);border:1.5px solid rgba(231,76,60,0.3);border-radius:14px;padding:14px;margin-bottom:12px">
+        <div style="font-size:0.9rem;font-weight:800;color:#e74c3c;margin-bottom:10px">🚨 Emergencias México</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <a href="tel:911" class="btn-emergencia">📞 911<div style="font-size:0.7rem;opacity:0.8">Emergencias</div></a>
+          <a href="tel:065" class="btn-emergencia">🚑 065<div style="font-size:0.7rem;opacity:0.8">Cruz Roja</div></a>
+          <a href="tel:07" class="btn-emergencia">🚒 07<div style="font-size:0.7rem;opacity:0.8">Bomberos</div></a>
+          <a href="tel:8002900024" class="btn-emergencia">💊 IMSS<div style="font-size:0.7rem;opacity:0.8">800-290-0024</div></a>
+          <a href="tel:8008911313" class="btn-emergencia" style="grid-column:span 2">🧠 Línea de la Vida<div style="font-size:0.7rem;opacity:0.8">800-911-2000 — Salud mental 24hrs</div></a>
+        </div>
+      </div>
+
+      <!-- LLAMAR Y WHATSAPP AL FAMILIAR -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+        <button class="btn-modal btn-primario" style="margin:0;font-size:0.95rem" onclick="llamarFamiliar()">📞 Llamar a mi familiar</button>
+        <button class="btn-modal btn-azul-btn" style="margin:0;font-size:0.95rem" onclick="whatsappFamiliar()">💬 WhatsApp familiar</button>
+      </div>
+    </div>
+
+    <!-- CHAT IA -->
+    <div id="chat-ia" style="display:none;max-height:260px;overflow-y:auto;margin-bottom:10px"></div>
+    <div id="chat-controles" style="display:none">
+
+      <!-- BOTÓN DE MICRÓFONO GRANDE -->
+      <div style="text-align:center;margin-bottom:10px">
+        <button id="btn-mic" onclick="toggleMic()" style="
+          width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;
+          background:radial-gradient(circle at 35% 35%, #4a9edd, #1a3a5c);
+          font-size:2rem;color:white;
+          box-shadow:0 0 0 8px rgba(74,158,221,0.15), 0 8px 25px rgba(26,58,92,0.5);
+          transition:transform 0.1s;display:flex;align-items:center;justify-content:center;margin:0 auto
+        ">🎤</button>
+        <div id="mic-estado" style="font-size:0.8rem;color:#94a3b8;margin-top:8px">Toca el micrófono para hablar</div>
+      </div>
+
+      <!-- O ESCRIBIR -->
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <textarea id="ia-input" placeholder="O escribe aquí..." style="flex:1;height:60px"></textarea>
+        <button class="btn-modal btn-azul-btn" onclick="enviarCheckin()" style="width:50px;height:60px;padding:0;font-size:1.3rem;margin:0">📤</button>
+      </div>
+
+      <!-- CONTROLES DE VOZ -->
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="btn-voz" onclick="toggleVoz()" class="btn-modal btn-secundario" style="flex:1;margin:0;font-size:0.85rem;padding:10px">🔊 Voz activada</button>
+        <button class="btn-modal btn-secundario" onclick="volverMenu()" style="flex:1;margin:0;font-size:0.85rem;padding:10px">← Menú</button>
+      </div>
+    </div>
+
+    <button class="btn-modal btn-secundario" style="margin-top:8px" onclick="cerrarModal('modal-checkin')">Cerrar</button>
   </div>
 </div>
 
@@ -490,6 +535,114 @@ let stream = null;
 let midiendo = false;
 let medicionInterval = null;
 let conversacionIA = [];
+let vozActiva = true;         // Guardián le habla al usuario
+let micActivo = false;        // Usuario habla a Guardián
+let reconocimiento = null;    // Speech Recognition
+
+// ═══════════════════════════════════
+// VOZ — TEXTO A VOZ (Guardián habla)
+// ═══════════════════════════════════
+function hablar(texto) {
+  if (!vozActiva) return;
+  window.speechSynthesis.cancel(); // Detener si ya estaba hablando
+  const utt = new SpeechSynthesisUtterance(texto);
+  utt.lang = 'es-MX';
+  utt.rate = 0.88;   // Un poco más lento para adultos mayores
+  utt.pitch = 1.05;
+  utt.volume = 1;
+
+  // Preferir voz en español si está disponible
+  const voces = window.speechSynthesis.getVoices();
+  const vozEs = voces.find(v => v.lang.startsWith('es') && v.localService) ||
+                voces.find(v => v.lang.startsWith('es')) || null;
+  if (vozEs) utt.voice = vozEs;
+
+  window.speechSynthesis.speak(utt);
+}
+
+function toggleVoz() {
+  vozActiva = !vozActiva;
+  window.speechSynthesis.cancel();
+  const btn = document.getElementById('btn-voz');
+  btn.textContent = vozActiva ? '🔊 Voz activada' : '🔇 Voz desactivada';
+  btn.style.background = vozActiva ? '' : 'rgba(231,76,60,0.2)';
+  mostrarToast(vozActiva ? '🔊 Guardián hablará' : '🔇 Voz desactivada');
+}
+
+// ═══════════════════════════════════
+// VOZ — VOZ A TEXTO (Usuario habla)
+// ═══════════════════════════════════
+function toggleMic() {
+  if (micActivo) {
+    detenerMic();
+  } else {
+    iniciarMic();
+  }
+}
+
+function iniciarMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    mostrarToast('⚠️ Tu navegador no soporta micrófono. Usa Chrome.');
+    return;
+  }
+
+  reconocimiento = new SR();
+  reconocimiento.lang = 'es-MX';
+  reconocimiento.continuous = false;
+  reconocimiento.interimResults = true;
+
+  reconocimiento.onstart = () => {
+    micActivo = true;
+    const btn = document.getElementById('btn-mic');
+    btn.style.background = 'radial-gradient(circle at 35% 35%, #e74c3c, #c0392b)';
+    btn.style.animation = 'pulso-sos 1s ease-in-out infinite';
+    btn.textContent = '⏹';
+    document.getElementById('mic-estado').textContent = '🔴 Escuchando... habla ahora';
+  };
+
+  reconocimiento.onresult = (e) => {
+    let texto = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      texto += e.results[i][0].transcript;
+    }
+    document.getElementById('ia-input').value = texto;
+  };
+
+  reconocimiento.onend = () => {
+    micActivo = false;
+    const btn = document.getElementById('btn-mic');
+    btn.style.background = 'radial-gradient(circle at 35% 35%, #4a9edd, #1a3a5c)';
+    btn.style.animation = '';
+    btn.textContent = '🎤';
+    document.getElementById('mic-estado').textContent = 'Toca el micrófono para hablar';
+
+    // Auto-enviar si capturó texto
+    const texto = document.getElementById('ia-input').value.trim();
+    if (texto) {
+      setTimeout(() => enviarCheckin(), 300);
+    }
+  };
+
+  reconocimiento.onerror = (e) => {
+    micActivo = false;
+    document.getElementById('btn-mic').textContent = '🎤';
+    document.getElementById('btn-mic').style.animation = '';
+    if (e.error === 'not-allowed') {
+      mostrarToast('⚠️ Permite el micrófono en el navegador');
+    } else {
+      mostrarToast('⚠️ No se entendió, intenta de nuevo');
+    }
+    document.getElementById('mic-estado').textContent = 'Toca el micrófono para hablar';
+  };
+
+  reconocimiento.start();
+}
+
+function detenerMic() {
+  if (reconocimiento) reconocimiento.stop();
+  micActivo = false;
+}
 
 // ═══════════════════════════════════
 // SETUP
@@ -517,9 +670,7 @@ function iniciar() {
   config.nombre = nombre;
   config.whatsapp = whatsapp;
   config.email = email;
-  config.emailjsPublicKey  = document.getElementById('s-ejskey').value.trim();
-  config.emailjsServiceId  = document.getElementById('s-ejssvc').value.trim();
-  config.emailjsTemplateId = document.getElementById('s-ejstpl').value.trim();
+  config.w3fKey = document.getElementById('s-w3fkey').value.trim();
   config.medicamentos = [];
 
   document.querySelectorAll('[id^="med-val-"]').forEach(inp => {
@@ -546,9 +697,7 @@ function irSetup() {
   document.getElementById('s-nombre').value = config.nombre;
   document.getElementById('s-whatsapp').value = config.whatsapp;
   document.getElementById('s-email').value = config.email || '';
-  document.getElementById('s-ejskey').value = config.emailjsPublicKey || '';
-  document.getElementById('s-ejssvc').value = config.emailjsServiceId || '';
-  document.getElementById('s-ejstpl').value = config.emailjsTemplateId || '';
+  document.getElementById('s-w3fkey').value = config.w3fKey || '';
   cambiarPantalla('setup');
 }
 
@@ -678,36 +827,43 @@ function activarSOS() {
 
 function cancelarSOS() {
   clearInterval(sosTimer);
+  detenerAlarma();
   document.getElementById('alerta-sos').classList.remove('visible');
   mostrarToast('✅ Alerta cancelada');
 }
 
-// EmailJS config — el usuario pone sus propias claves en el setup
-const EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY';   // se reemplaza en setup
-const EMAILJS_SERVICE_ID  = 'TU_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
-
 async function enviarEmailAlerta(tipo, mensaje) {
   if (!config.email) return;
-  if (!config.emailjsPublicKey || config.emailjsPublicKey === 'TU_PUBLIC_KEY') {
-    // Sin EmailJS configurado: usar mailto como fallback
+
+  // Sin clave Web3Forms: fallback a mailto
+  if (!config.w3fKey) {
     const subject = encodeURIComponent(`${tipo} - Guardián Mayor`);
     const body = encodeURIComponent(`${mensaje}\n\n⏰ ${new Date().toLocaleString('es-MX')}\n\nEnviado desde Guardián Mayor`);
     window.open(`mailto:${config.email}?subject=${subject}&body=${body}`, '_blank');
     return;
   }
+
+  // Con clave Web3Forms: envío automático
   try {
-    emailjs.init(config.emailjsPublicKey);
-    await emailjs.send(config.emailjsServiceId, config.emailjsTemplateId, {
-      to_email: config.email,
-      subject: `${tipo} - Guardián Mayor`,
-      nombre: config.nombre,
-      mensaje: mensaje,
-      hora: new Date().toLocaleString('es-MX')
+    const resp = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: config.w3fKey,
+        subject: `${tipo} — Guardián Mayor`,
+        from_name: 'Guardián Mayor',
+        message: `${mensaje}\n\n⏰ ${new Date().toLocaleString('es-MX')}`,
+        email: config.email
+      })
     });
-    mostrarToast('📧 Email enviado automáticamente');
+    const data = await resp.json();
+    if (data.success) {
+      mostrarToast('📧 Email enviado automáticamente ✅');
+    } else {
+      mostrarToast('⚠️ No se pudo enviar el email');
+    }
   } catch(e) {
-    console.error('EmailJS error:', e);
+    console.error('Web3Forms error:', e);
   }
 }
 
@@ -758,11 +914,96 @@ function cerrarModal(id) {
 }
 
 async function iniciarCheckin() {
-  const chat = document.getElementById('chat-ia');
+  // Solo abre el menú — el chat se activa al elegir tema
+  volverMenu();
+}
+
+function volverMenu() {
+  window.speechSynthesis.cancel();
+  detenerMic();
+  document.getElementById('menu-asistente').style.display = 'block';
+  document.getElementById('chat-ia').style.display = 'none';
+  document.getElementById('chat-controles').style.display = 'none';
   conversacionIA = [];
-  const saludo = `¡Hola ${config.nombre}! 😊 ¿Cómo te has sentido hoy? Puedes contarme si tienes algún dolor, mareo, o simplemente cómo amaneciste.`;
-  chat.innerHTML = `<div class="ia-burbuja">🤖 ${saludo}</div>`;
+}
+
+function llamarFamiliar() {
+  if (config.whatsapp) {
+    window.open(`tel:${config.whatsapp}`, '_self');
+  } else {
+    mostrarToast('⚠️ No hay número configurado');
+  }
+}
+
+function whatsappFamiliar() {
+  const texto = encodeURIComponent(`Hola, soy ${config.nombre}. Te escribo desde la app Guardián Mayor.`);
+  window.open(`https://wa.me/${config.whatsapp}?text=${texto}`, '_blank');
+}
+
+const PROMPTS_TEMAS = {
+  salud: `Eres Guardián, asistente de salud cariñoso para adultos mayores mexicanos. 
+Pregunta al paciente cómo se siente hoy con calidez. Si menciona síntomas graves (dolor de pecho, dificultad al respirar, desmayo, confusión severa) indica [ALERTA_FAMILIAR] al final. Da consejos simples y prácticos. Máximo 3 oraciones por respuesta.`,
+
+  emergencia: `Eres Guardián. El adulto mayor reporta una emergencia. 
+Mantén la calma, pregunta qué está pasando. Si es urgente, dile que llame al 911 de inmediato. Incluye [ALERTA_FAMILIAR] siempre en emergencias. Respuestas muy cortas y claras.`,
+
+  recetas: `Eres Guardián, experto en nutrición para adultos mayores mexicanos. 
+Sugiere recetas saludables, fáciles de preparar, económicas, con ingredientes mexicanos comunes. Considera enfermedades crónicas comunes (diabetes, hipertensión). Da una receta completa con ingredientes y pasos simples cuando te la pidan.`,
+
+  tips: `Eres Guardián, consejero de salud para adultos mayores en México. 
+Da tips de salud prácticos, preventivos y fáciles de aplicar en casa. Cubre hidratación, sol, postura, higiene, prevención de caídas, cuidado de pies, visión, audición. Un tip detallado por respuesta.`,
+
+  psicologia: `Eres Guardián, acompañante emocional empático para adultos mayores. 
+Escucha con mucha paciencia y calidez. Aborda soledad, tristeza, ansiedad, pérdida de seres queridos. Da técnicas simples de relajación y bienestar emocional. Si detectas depresión severa o ideas de hacerse daño, incluye [ALERTA_FAMILIAR] y sugiere llamar a Línea de la Vida 800-911-2000.`,
+
+  medicamentos: `Eres Guardián, asistente de medicamentos para adultos mayores. 
+Los medicamentos registrados del paciente son: ${() => config.medicamentos?.join(', ') || 'ninguno registrado'}.
+Explica para qué sirve cada uno en lenguaje muy simple, cuándo tomarlo, qué alimentos evitar con cada uno, y señales de alarma. Nunca cambies ni suspendas medicamentos — siempre remite al médico.`,
+
+  ejercicio: `Eres Guardián, instructor de ejercicio suave para adultos mayores. 
+Sugiere ejercicios seguros: estiramiento, caminata, equilibrio, fortalecimiento suave. Siempre con precauciones para evitar caídas. Describe los ejercicios paso a paso, muy claramente. Adapta según limitaciones que mencione el paciente.`,
+
+  dormir: `Eres Guardián, experto en sueño para adultos mayores. 
+Da consejos prácticos para dormir mejor: rutinas nocturnas, ambiente, posiciones, alimentos que ayudan o perjudican el sueño, técnicas de relajación. Aborda insomnio, despertares nocturnos y siestas.`,
+
+  memoria: `Eres Guardián, experto en estimulación cognitiva para adultos mayores. 
+Propón ejercicios de memoria, concentración y agilidad mental: juegos de palabras, series numéricas, recuerdos, asociaciones. Hazlo de forma lúdica y motivadora. Ofrece un ejercicio concreto por sesión.`,
+
+  nutricion: `Eres Guardián, nutriólogo para adultos mayores mexicanos. 
+Sugiere qué comer hoy: desayuno, comida y cena saludables, económicos y con ingredientes locales. Considera diabetes, hipertensión e hipercolesterolemia. Da porciones aproximadas y horarios recomendados.`
+};
+
+const SALUDOS_TEMAS = {
+  salud: `¡Hola ${() => config.nombre}! 😊 ¿Cómo amaneciste hoy? Cuéntame cómo te sientes.`,
+  emergencia: `Estoy aquí contigo. 🆘 ¿Qué está pasando? Cuéntame para ayudarte.`,
+  recetas: `¡Hola! 🥗 ¿Quieres una receta especial o te sorprendo con algo rico y sano?`,
+  tips: `¡Listo! 💡 ¿Quieres un tip general de salud o sobre algo específico?`,
+  psicologia: `Aquí estoy para escucharte. 🧠 ¿Cómo te has sentido emocionalmente estos días?`,
+  medicamentos: `Te explico todo sobre tus medicamentos. 💊 ¿Tienes alguna duda específica?`,
+  ejercicio: `¡Vamos a movernos! 🏃 ¿Tienes alguna limitación física que deba considerar?`,
+  dormir: `El buen sueño es vital. 😴 ¿Cuál es tu problema principal para dormir?`,
+  memoria: `¡Ejercitemos la mente! 🧩 ¿Empezamos con un juego de memoria?`,
+  nutricion: `Una buena alimentación es medicina. 🍎 ¿Tienes diabetes, presión alta u otra condición?`
+};
+
+let temaActual = 'salud';
+
+async function iniciarTema(tema) {
+  temaActual = tema;
+  conversacionIA = [];
+
+  document.getElementById('menu-asistente').style.display = 'none';
+  const chatEl = document.getElementById('chat-ia');
+  chatEl.style.display = 'block';
+  document.getElementById('chat-controles').style.display = 'block';
+
+  const saludo = SALUDOS_TEMAS[tema].replace('${() => config.nombre}', config.nombre);
+  chatEl.innerHTML = `<div class="ia-burbuja">🤖 ${saludo}</div>`;
   conversacionIA.push({ role: 'assistant', content: saludo });
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  // Guardián habla el saludo
+  hablar(saludo);
 }
 
 async function enviarCheckin() {
@@ -779,26 +1020,13 @@ async function enviarCheckin() {
   chat.scrollTop = chat.scrollHeight;
 
   try {
-    const mensajes = [
-      {
-        role: 'user',
-        content: `Eres un asistente de salud amable para adultos mayores en México. Tu nombre es Guardián. 
-El paciente se llama ${config.nombre}.
-Sus medicamentos son: ${config.medicamentos.join(', ') || 'no registrados'}.
+    const sistemaPrompt = (PROMPTS_TEMAS[temaActual] || PROMPTS_TEMAS.salud)
+      .replace('${() => config.medicamentos?.join(\', \') || \'ninguno registrado\'}', config.medicamentos?.join(', ') || 'ninguno registrado');
 
-INSTRUCCIONES:
-- Habla de forma muy simple, cariñosa y con paciencia
-- Si detectas síntomas graves (dolor de pecho, dificultad respiratoria, confusión severa, desmayo), di CLARAMENTE que debe llamar al familiar o al 911
-- Si está bien, anímalo y da un consejo de salud breve
-- Máximo 3 oraciones
-- Si el mensaje sugiere emergencia, incluye al final: [ALERTA_FAMILIAR]
-
-Conversación hasta ahora:
-${conversacionIA.map(m => `${m.role === 'user' ? 'Paciente' : 'Guardián'}: ${m.content}`).join('\n')}
-
-Responde como Guardián:`
-      }
-    ];
+    const historial = conversacionIA.slice(0, -1).map(m => ({
+      role: m.role, content: m.content
+    }));
+    historial.push({ role: 'user', content: `${sistemaPrompt}\n\nPaciente se llama: ${config.nombre}\n\nMensaje: ${texto}` });
 
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -806,7 +1034,7 @@ Responde como Guardián:`
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        messages: mensajes
+        messages: historial
       })
     });
 
@@ -819,19 +1047,28 @@ Responde como Guardián:`
     chat.innerHTML += `<div class="ia-burbuja">🤖 ${textoLimpio}</div>`;
     conversacionIA.push({ role: 'assistant', content: textoLimpio });
 
+    // Guardián habla la respuesta
+    hablar(textoLimpio);
+
     if (esAlerta) {
-      chat.innerHTML += `<div style="background:rgba(231,76,60,0.2);border:1.5px solid #e74c3c;border-radius:14px;padding:14px;margin-bottom:12px;text-align:center">
-        ⚠️ <strong>Se detectó posible problema</strong><br>
-        <button class="btn-modal btn-peligro" style="margin-top:10px;font-size:0.9rem;padding:12px" onclick="enviarAlertaWhatsApp('⚠️ Alerta de salud','${config.nombre} reportó síntomas que requieren atención. Revisa la app Guardián Mayor.')">
-          📲 Notificar al familiar
-        </button>
+      chat.innerHTML += `
+      <div style="background:rgba(231,76,60,0.15);border:1.5px solid #e74c3c;border-radius:14px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:800;margin-bottom:10px">⚠️ Se detectó posible problema</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <a href="tel:911" class="btn-emergencia">📞 Llamar 911</a>
+          <a href="tel:${config.whatsapp}" class="btn-emergencia">📞 Llamar familiar</a>
+          <button class="btn-modal btn-peligro" style="grid-column:span 2;margin:0;font-size:0.9rem;padding:12px"
+            onclick="enviarAlertaWhatsApp('⚠️ Alerta de salud','${config.nombre} reportó síntomas que requieren atención.')">
+            💬 WhatsApp al familiar
+          </button>
+        </div>
       </div>`;
     }
 
     chat.scrollTop = chat.scrollHeight;
   } catch(e) {
     chat.querySelector('.cargando')?.remove();
-    chat.innerHTML += `<div class="ia-burbuja">⚠️ No hay conexión a internet. Intenta más tarde.</div>`;
+    chat.innerHTML += `<div class="ia-burbuja">⚠️ Sin conexión a internet. Intenta más tarde.</div>`;
   }
 }
 
@@ -1027,7 +1264,51 @@ function activarDetectorAuto() {
   }
 }
 
-let ultimaCaida = 0;
+// ═══════════════════════════════════
+// ALARMA SONORA
+// ═══════════════════════════════════
+let audioCtx = null;
+let alarmaInterval = null;
+let alarmaActiva = false;
+
+function iniciarAlarma() {
+  try {
+    if (alarmaActiva) return;
+    alarmaActiva = true;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    let ciclo = 0;
+    function tocarBeep() {
+      if (!alarmaActiva || !audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      // Alterna entre tono alto y bajo para sonar como sirena
+      osc.frequency.value = ciclo % 2 === 0 ? 1100 : 800;
+      osc.type = 'square';
+      gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.4);
+      ciclo++;
+    }
+
+    tocarBeep();
+    alarmaInterval = setInterval(tocarBeep, 500);
+  } catch(e) {
+    console.log('Audio no disponible:', e);
+  }
+}
+
+function detenerAlarma() {
+  alarmaActiva = false;
+  if (alarmaInterval) { clearInterval(alarmaInterval); alarmaInterval = null; }
+  if (audioCtx) { try { audioCtx.close(); } catch(e){} audioCtx = null; }
+}
+
+
 function detectarCaida(e) {
   const ag = e.accelerationIncludingGravity;
   if (!ag) return;
@@ -1047,6 +1328,9 @@ let caídaTimeout = null;
 function alertaCaida() {
   if (navigator.vibrate) navigator.vibrate([1000, 500, 1000, 500, 1000]);
 
+  // Alarma sonora
+  iniciarAlarma();
+
   // Obtener GPS en segundo plano
   obtenerUbicacion();
 
@@ -1064,6 +1348,7 @@ function alertaCaida() {
     document.getElementById('countdown-num').textContent = sosCount;
     if (sosCount <= 0) {
       clearInterval(sosTimer);
+      detenerAlarma();
       const msj = `El sensor del teléfono de ${config.nombre} detectó una posible caída. Comunícate inmediatamente.${linkMaps(ultimaUbicacion)}`;
       enviarAlertaWhatsApp('🚨 POSIBLE CAÍDA DETECTADA', msj);
       // Reactivar detector tras alerta
